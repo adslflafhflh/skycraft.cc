@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skycraft - 我的世界服务器</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --mc-green: #4CAF50;
+            --mc-dark-green: #2E7D32;
+            --mc-blue: #2196F3;
+            --mc-dark-blue: #1565C0;
+            --mc-brown: #795548;
+            --mc-dark-brown: #4E342E;
+            --mc-gray: #9E9E9E;
+            --mc-dark-gray: #424242;
+            --mc-gold: #FFD700;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect fill="%23e0e0e0" width="50" height="50"/><rect fill="%23e0e0e0" x="50" y="50" width="50" height="50"/></svg>');
+            background-size: 20px 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* 导航栏样式 */
+        header {
+            background: linear-gradient(135deg, var(--mc-green) 0%, var(--mc-dark-green) 100%);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><path fill="%23ffffff" fill-opacity="0.1" d="M0 0h20v20H0zM20 20h20v20H20z"/></svg>');
+            background-size: 40px 40px;
+        }
+        
+        .server-title {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 3px 3px 0 rgba(0,0,0,0.2);
+            position: relative;
+            font-weight: 800;
+        }
+        
+        .server-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            opacity: 0.9;
+            position: relative;
+        }
+        
+        .server-ip {
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 1.2rem;
+            display: inline-block;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        nav {
+            background-color: var(--mc-dark-green);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        nav ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            flex-wrap: wrap;
+        }
+        
+        nav li {
+            margin: 5px 15px;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 8px 15px;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+        
+        nav a:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        /* 主视觉区域 */
+        .hero {
+            height: 500px;
+            position: relative;
+            overflow: hidden;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .hero-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+        
+        .hero-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+            padding: 30px;
+        }
+        
+        .hero-title {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .hero-text {
+            max-width: 600px;
+            font-size: 1.1rem;
+        }
+        
+        /* 内容区域样式 */
+        section {
+            padding: 60px 0;
+            background: white;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 40px;
+            color: var(--mc-dark-green);
+            font-size: 2.2rem;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--mc-green);
+            border-radius: 2px;
+        }
+        
+        .about-content {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 30px;
+        }
+        
+        .about-text {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .about-text p {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+        
+        .server-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .stat-box {
+            background: #f9f9f9;
+            padding: 25px 20px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid var(--mc-green);
+            transition: transform 0.3s;
+        }
+        
+        .stat-box:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--mc-dark-green);
+            margin-bottom: 10px;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        
+        .feature {
+            text-align: center;
+            padding: 30px 20px;
+            border-radius: 8px;
+            background: #f9f9f9;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .feature:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--mc-dark-green);
+        }
+        
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .gallery-item {
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            height: 250px;
+            background-color: #eee;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+        
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+        
+        .gallery-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        .join-section {
+            text-align: center;
+            background: linear-gradient(135deg, var(--mc-blue) 0%, var(--mc-dark-blue) 100%);
+            color: white;
+        }
+        
+        .join-section .section-title {
+            color: white;
+        }
+        
+        .join-section .section-title::after {
+            background: white;
+        }
+        
+        .join-button {
+            display: inline-block;
+            background: white;
+            color: var(--mc-dark-blue);
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .join-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        
+        footer {
+            background: var(--mc-dark-gray);
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+        }
+        
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .footer-section {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .footer-section h3 {
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            color: var(--mc-gold);
+        }
+        
+        .footer-section p {
+            margin-bottom: 10px;
+        }
+        
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .social-icons a {
+            color: white;
+            font-size: 1.5rem;
+            transition: color 0.3s;
+        }
+        
+        .social-icons a:hover {
+            color: var(--mc-gold);
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 20px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .server-title {
+                font-size: 2.2rem;
+            }
+            
+            .hero {
+                height: 400px;
+            }
+            
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .section-title {
+                font-size: 1.8rem;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            nav li {
+                margin: 5px 0;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .server-title {
+                font-size: 1.8rem;
+            }
+            
+            .hero {
+                height: 300px;
+            }
+            
+            .hero-title {
+                font-size: 1.6rem;
+            }
+            
+            .section-title {
+                font-size: 1.5rem;
+            }
+            
+            .stat-number {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="server-title">Skycraft服务器</h1>
+            <p class="server-subtitle">一个活跃、包容、开放的Minecraft社区</p>
+            <div class="server-ip">skycraft.cc</div>
+        </div>
+    </header>
+    
+    <nav>
+        <div class="container">
+            <ul>
+                <li><a href="#about">服务器介绍</a></li>
+                <li><a href="#features">特色亮点</a></li>
+                <li><a href="#gallery">建筑展示</a></li>
+                <li><a href="#join">加入我们</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <div class="hero">
+            <img src="palace.jpeg" alt="Skycraft服务器主建筑" class="hero-image">
+            <div class="hero-content">
+                <h2 class="hero-title">探索无尽的创造可能性</h2>
+                <p class="hero-text">加入我们，成为这个充满活力社区的一员，一起建造、探索和创造属于我们的世界！</p>
+            </div>
+        </div>
+        
+        <section id="about">
+            <h2 class="section-title">关于Skycraft</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>Skycraft是一个已经稳定运行2周年的Minecraft服务器，由服主天沐tnt创建并维护。我们拥有一个活跃、包容和开放的玩家社区，无论你是建筑大师、红石大神还是生存爱好者，都能在这里找到属于自己的一片天空。</p>
+                    <p>我们的服务器平均日常活跃玩家20人，周末、暑假和法定节假日活跃玩家可达40人。最近我们刚刚举办了盛大的2周年联欢会，见证了社区的成长与活力。</p>
+                    <p>服务器采用高性能物理机，搭载Intel i9-13500处理器，确保游戏体验流畅稳定，拒绝卡顿和延迟。</p>
+                </div>
+                <div class="server-stats">
+                    <div class="stat-box">
+                        <div class="stat-number">2+</div>
+                        <div class="stat-label">稳定运行年数</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">20+</div>
+                        <div class="stat-label">平日活跃玩家</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">40+</div>
+                        <div class="stat-label">节假日活跃玩家</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">3</div>
+                        <div class="stat-label">庞大建筑群</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="features">
+            <h2 class="section-title">服务器特色</h2>
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">🏰</div>
+                    <h3>宏伟建筑群</h3>
+                    <p>服务器拥有3个庞大的建筑群，每个都是玩家们共同努力的结晶，展现了惊人的创造力和协作精神。</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">👨‍👩‍👧‍👦</div>
+                    <h3>活跃社区</h3>
+                    <p>我们拥有一个友好、热情且包容的玩家社区，定期举办各种活动和比赛，让每位玩家都能找到归属感。</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">⚡</div>
+                    <h3>高性能硬件</h3>
+                    <p>搭载Intel i9-13500处理器的专用服务器，确保游戏运行流畅，提供最佳的游戏体验。</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🌐</div>
+                    <h3>持久稳定</h3>
+                    <p>服务器已稳定运行2年以上，拥有完善的备份系统和管理制度，确保你的建筑和成果得到长期保护。</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="gallery">
+            <h2 class="section-title">建筑展示</h2>
+            <div class="gallery">
+                <div class="gallery-item">
+                    <img src="palace.jpeg" alt="宏伟宫殿">
+                    <div class="gallery-caption">宏伟宫殿建筑群</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="5538cad96bc52812781dbe5f02fe9de2.jpeg" alt="叶子地宫的夜市">
+                    <div class="gallery-caption">叶子地宫的夜市</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="castle.jpeg" alt="中世纪城堡">
+                    <div class="gallery-caption">中世纪城堡</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="riverbank.jpeg" alt="河畔小镇">
+                    <div class="gallery-caption">河畔小镇风光</div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="join" class="join-section">
+            <h2 class="section-title">加入Skycraft社区</h2>
+            <p>无论你是新手还是老玩家，Skycraft都欢迎你的加入！</p>
+            <p>服务器IP: <strong>skycraft.cc</strong></p>
+            <p>版本支持: <strong>Java版 1.18.x - 1.20.x</strong></p>
+            <p>官方QQ群: <strong>855878210</strong></p>
+            <a href="#" class="join-button">立即加入</a>
+        </section>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>服务器信息</h3>
+                    <p>IP: skycraft.cc</p>
+                    <p>服主: 天沐tnt</p>
+                    <p>成立时间: 2022年</p>
+                </div>
+                <div class="footer-section">
+                    <h3>社区链接</h3>
+                    <p>QQ群: 855878210</p>
+                    <p>Discord: 即将开放</p>
+                    <p>微博: @Skycraft服务器</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-qq"></i></a>
+                        <a href="#"><i class="fab fa-discord"></i></a>
+                        <a href="#"><i class="fab fa-weibo"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>规则与指南</h3>
+                    <p>服务器规则</p>
+                    <p>新手指南</p>
+                    <p>建筑申请</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Skycraft Minecraft服务器. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
